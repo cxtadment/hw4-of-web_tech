@@ -1,0 +1,145 @@
+<html>
+<head>
+	<title>company list</title>
+	<script type="text/javascript">
+
+		function loadXML(url){
+			if (window.XMLHttpRequest) {
+				xmlhttp=new XMLHttpRequest(); 
+			}else {
+				xmlhttp=new ActiveXObject("Microsoft.XMLHTTP"); 
+			}
+				xmlhttp.open("GET",url,false);
+				xmlhttp.send(); 
+				xmlDoc=xmlhttp.responseXML;
+
+				return xmlDoc;
+		}
+		
+
+		function displayXML(form){
+			
+			URL = form.URL.value;
+
+			if(URL==""){
+				alert("The URL you typed is empty!!!");
+				return;
+			}
+			if(allblank(URL)){
+				alert("The URL you typed is all blank");
+				return;
+			}
+
+
+			xmlDoc = loadXML(URL);
+
+			//xml exists or not
+			if(xmlDoc==null){
+				alert("xml file doesn't exist");
+				return;
+				//if xml file is valid or not
+			 }else if(xmlDoc.documentElement.nodeName == "parsererror"){
+			 	errStr = xmlDoc.documentElement.childNodes[0].nodeValue;
+  				errStr = errStr.replace(/</g, "&lt;");
+				alert("Error in XML file");
+				return;
+			}else{
+				xmlDoc.onload=generateHTML(xmlDoc);
+    			hWin = window.open("", "Assignment4", "height=500,width=800,scrollbars=yes");
+    			hWin.document.write(html_text);  
+    			hWin.document.close();
+			}
+
+	}
+
+		function generateHTML(xmlDoc){
+	           	html_text="<html><head><title>XML Parse Result</title></head><body>";
+	           	html_text+="<div text-align=left><table border='2'>";
+
+	           	sections = xmlDoc.getElementsByTagName("Row");
+	           	if(sections.length<=1){
+	           		alert("No company in the xml");
+	           	}
+	           	headerNodes=xmlDoc.getElementsByTagName("Data");
+           		console.log(headerNodes.length);
+	           	html_text+="<tbody>";
+	           	html_text+="<tr>";
+		  		for(i=0;i<headerNodes.length;i++){
+		  			header = headerNodes.item(i).firstChild.nodeValue;
+		  			html_text+="<th>"+header+"</th>";  
+		  		}
+		  		html_text+="</tr>";
+
+		  		Symbol=xmlDoc.getElementsByTagName("Symbol");
+	            Name=xmlDoc.getElementsByTagName("Name");
+	            LastSale=xmlDoc.getElementsByTagName("LastSale");
+	            Sector=xmlDoc.getElementsByTagName("Sector");
+	            Industry=xmlDoc.getElementsByTagName("Industry");
+	            HomePage=xmlDoc.getElementsByTagName("HomePage");
+	            Logo=xmlDoc.getElementsByTagName("Logo");
+
+	            for(j=0;j<headerNodes.length;j++){
+	            	html_text+="<tr>";
+	            		html_text+="<th>"+contentDisplay(Symbol.item(j))+"</th>";
+	            		html_text+="<th>"+contentDisplay(Name.item(j))+"</th>";
+	            		html_text+="<th>"+contentDisplay(LastSale.item(j))+"</th>";
+	            		html_text+="<th>"+contentDisplay(Sector.item(j))+"</th>";
+	            		html_text+="<th>"+contentDisplay(Industry.item(j))+"</th>";
+	            		html_text+="<th><a href='"+contentDisplay(HomePage.item(j))+"'>link to company</a></th>";
+	            		html_text+="<th><img width=100 height=100 src='"+contentDisplay(Logo.item(j))+"'></th>";
+	            	html_text+="</tr>";
+	            }
+
+	            html_text+="</tbody>";
+                html_text+="</table></div>";
+                html_text+="</bo";
+                html_text+="dy></html>"
+	       	}
+
+	       	function contentDisplay(content){
+	       		if(content.childNodes.length==0){
+	       			return "N.A";
+	       		}else{
+	       			str = content.childNodes[0].nodeValue;
+	       			if(allblank(str)){
+	       				return "N.A";
+	       			}else{
+	       				return content.childNodes[0].nodeValue;
+	       			}
+	       		}
+	       	}
+
+	       	function allblank(str){
+	       		while(str.lastIndexOf(" ")>=0){
+      					str = str.replace(" ","");
+   				}
+   				if(str.length==0){
+	       				return true;
+	       		}
+	       		return false;
+	       	}
+
+	</script>
+	<style type="text/css">
+		body{
+			text-align: center;
+		}
+	</style>
+</head>
+<body>
+	<div align="center">
+		<h3>Enter URL for Company List XML File</h3>
+	</div>
+	<br>
+	<form name="form1" method="post" >
+		<div>
+			<input type="text" maxlength="255" size="50" name="URL" />
+		</div>
+		<br>
+		<div>
+			<input type="button" name="submit" value="Submit Query" onClick="displayXML(this.form)"/>
+		</div>
+	</form>
+	<noscript>
+</body>
+</html>
