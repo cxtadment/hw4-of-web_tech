@@ -11,6 +11,10 @@
 			}
 				xmlhttp.open("GET",url,false);
 				xmlhttp.send(); 
+				if(xmlhttp.status == 404){
+					alert("file doesn't exist!!!");
+					return;
+				}
 				xmlDoc=xmlhttp.responseXML;
 
 				return xmlDoc;
@@ -25,6 +29,7 @@
 				alert("The URL you typed is empty!!!");
 				return;
 			}
+
 			if(allblank(URL)){
 				alert("The URL you typed is all blank");
 				return;
@@ -32,13 +37,8 @@
 
 
 			xmlDoc = loadXML(URL);
-
-			//xml exists or not
-			if(xmlDoc==null){
-				alert("xml file doesn't exist");
-				return;
-				//if xml file is valid or not
-			 }else if(xmlDoc.documentElement.nodeName == "parsererror"){
+			
+			if(xmlDoc.documentElement.nodeName == "parsererror"){
 			 	errStr = xmlDoc.documentElement.childNodes[0].nodeValue;
   				errStr = errStr.replace(/</g, "&lt;");
 				alert("Error in XML file");
